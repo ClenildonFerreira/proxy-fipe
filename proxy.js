@@ -1,3 +1,4 @@
+
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
@@ -10,21 +11,29 @@ app.use(express.json()); // Permite JSON no corpo da requisição
 app.post("/proxy", async (req, res) => {
     const { placa, token } = req.body;
 
-    // Validações básicas
+    // Logs para debug
+    console.log("Body recebido:", req.body);
+
+    // Validação dos parâmetros
     if (!placa || !token) {
-        console.error("Erro: Parâmetros inválidos.", req.body);
+        console.error("Erro: Parâmetros inválidos!");
         return res.status(400).json({ error: "Placa e token são obrigatórios!" });
     }
 
     try {
         // Fazendo a requisição para a API externa
-        console.log("Requisição para a API PlacaFipe:", { placa, token });
+        console.log("Requisição para API externa com:", { placa, token });
         const response = await axios.post("https://api.placafipe.com.br/getplacafipe", { placa, token });
         res.json(response.data);
     } catch (error) {
-        console.error("Erro ao chamar a API externa:", error.message);
+        console.error("Erro ao comunicar com API externa:", error.message);
         res.status(500).json({ error: "Erro ao processar a requisição" });
     }
+});
+
+// Rota de diagnóstico
+app.get("/health", (req, res) => {
+    res.json({ status: "Servidor funcionando corretamente" });
 });
 
 // Configuração da porta dinâmica
