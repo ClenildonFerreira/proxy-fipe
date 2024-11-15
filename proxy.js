@@ -11,7 +11,7 @@ app.use(express.json()); // Permite JSON no corpo da requisição
 app.post("/proxy", async (req, res) => {
     const { placa, token } = req.body;
 
-    console.log("Body recebido:", req.body);
+    console.log("Requisição recebida com:", { placa, token });
 
     if (!placa || !token) {
         return res.status(400).json({ error: "Placa e token são obrigatórios!" });
@@ -19,6 +19,7 @@ app.post("/proxy", async (req, res) => {
 
     try {
         const response = await axios.post("https://api.placafipe.com.br/getplacafipe", { placa, token });
+        console.log("Resposta da API externa:", response.data);
         res.json(response.data);
     } catch (error) {
         console.error("Erro ao comunicar com API externa:", error.message);
@@ -30,8 +31,8 @@ app.post("/proxy", async (req, res) => {
 app.get("/test-api", async (req, res) => {
     try {
         const response = await axios.post("https://api.placafipe.com.br/getplacafipe", {
-            placa: "ABC1234",
-            token: "56486C229830181C41F53EE1FC42D53E9BA471A0F7FA4812F7C9ADA62E29F6"
+            placa: "SBC2H70",
+            token: "5548C6220301814C17535EE11FC42D53E9BA471A0F7FA4812F7C9ADA6E22E9F6" // Substitua por um token válido para teste
         });
         res.json(response.data);
     } catch (error) {
@@ -45,8 +46,13 @@ app.get("/health", (req, res) => {
     res.json({ status: "Servidor funcionando corretamente" });
 });
 
+// Rota genérica para capturar erros de rotas não encontradas
+app.all("*", (req, res) => {
+    res.status(404).json({ error: "Rota não encontrada", method: req.method, url: req.url });
+});
+
 // Configuração da porta dinâmica
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
