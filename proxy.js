@@ -1,12 +1,13 @@
-
 const express = require('express');
 const app = express();
 const cors = require('cors');
 const axios = require('axios');
 
+// Configuração básica
 app.use(cors());
 app.use(express.json());
 
+// Endpoint POST
 app.post('/proxy', async (req, res) => {
     const { placa, token } = req.body;
 
@@ -23,6 +24,7 @@ app.post('/proxy', async (req, res) => {
     }
 });
 
+// Porta dinâmica (Railway)
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Proxy rodando na porta ${PORT}`);
