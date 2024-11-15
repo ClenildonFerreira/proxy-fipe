@@ -1,4 +1,9 @@
 
+
+app.use((req, res, next) => {
+    console.log(`Requisição recebida - Método: ${req.method}, Rota: ${req.path}`);
+    next();
+});
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
@@ -55,4 +60,19 @@ app.all("*", (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
+});
+
+app.post('/proxy', async (req, res) => {
+    console.log('Rota /proxy acionada');
+    try {
+        const response = await axios.post('URL_DA_API_ORIGINAL', req.body, {
+            headers: {
+                Authorization: `Bearer ${req.body.token}`,
+            },
+        });
+        res.status(response.status).send(response.data);
+    } catch (error) {
+        console.error('Erro ao processar a requisição para a API:', error.message);
+        res.status(500).send({ error: 'Erro interno no servidor' });
+    }
 });
