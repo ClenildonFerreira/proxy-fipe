@@ -1,21 +1,14 @@
 {
     "name": "proxy-fipe",
     "version": "1.0.0",
-    "description": "Proxy para consultar informações na API FIPE.",
-    "main": "proxy_heroku_ready.js",
+    "main": "proxy.js",
     "scripts": {
-      "start": "node proxy_heroku_ready.js"
+        "start": "node proxy.js",
+        "vercel-build": "npm install"
     },
     "dependencies": {
-      "axios": "^0.21.1",
-      "cors": "^2.8.5",
-      "express": "^4.17.1"
-    },
-    "engines": {
-      "node": "16.x"
-    },
-    "keywords": [],
-    "author": "Clenildon Ferreira",
-    "license": "MIT"
-  }
-  
+        "axios": "^1.7.7",
+        "cors": "^2.8.5",
+        "express": "^4.21.1"
+    }
+}
