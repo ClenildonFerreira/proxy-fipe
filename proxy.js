@@ -1,31 +1,26 @@
-const express = require('express');
-const app = express();
-const cors = require('cors');
-const axios = require('axios');
+const express = require("express");
+const cors = require("cors");
+const axios = require("axios");
 
-// Configuração básica
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Endpoint POST
-app.post('/proxy', async (req, res) => {
-    const { placa, token } = req.body;
-
-    if (!placa || !token) {
-        return res.status(400).json({ error: 'Placa e token são obrigatórios!' });
+app.post("/proxy", async (req, res) => {
+    const { placa } = req.body;
+    if (!placa || placa.length !== 7) {
+        return res.status(400).json({ error: "Placa inválida." });
     }
 
     try {
-        const response = await axios.post('https://api.original-url.com', { placa, token });
+        const response = await axios.post("https://api.placafipe.com.br/getplacafipe", req.body);
         res.json(response.data);
     } catch (error) {
-        console.error('Erro ao realizar a requisição:', error.message);
-        res.status(500).json({ error: 'Erro ao processar a requisição' });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// Porta dinâmica (Railway)
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000; // Porta dinâmica para hospedagem
 app.listen(PORT, () => {
     console.log(`Proxy rodando na porta ${PORT}`);
 });
