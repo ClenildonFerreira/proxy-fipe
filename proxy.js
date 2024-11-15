@@ -1,3 +1,4 @@
+
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
@@ -10,32 +11,36 @@ app.use(express.json()); // Permite JSON no corpo da requisição
 app.post("/proxy", async (req, res) => {
     const { placa, token } = req.body;
 
-    // Logs para debug
     console.log("Body recebido:", req.body);
 
-    // Validação dos parâmetros
     if (!placa || !token) {
-        console.error("Erro: Parâmetros inválidos!");
         return res.status(400).json({ error: "Placa e token são obrigatórios!" });
     }
 
     try {
-        // Fazendo a requisição para a API externa
-        console.log("Requisição para API externa com:", { placa, token });
         const response = await axios.post("https://api.placafipe.com.br/getplacafipe", { placa, token });
         res.json(response.data);
     } catch (error) {
         console.error("Erro ao comunicar com API externa:", error.message);
-        res.status(500).json({ error: "Erro ao processar a requisição" });
+        res.status(500).json({ error: "Erro ao processar a requisição", details: error.message });
     }
 });
 
-// Rota GET para `/proxy` para fins de feedback
-app.get("/proxy", (req, res) => {
-    res.status(405).json({ message: "Use o método POST para acessar esta rota." });
+// Rota de diagnóstico para testar conexão com API externa
+app.get("/test-api", async (req, res) => {
+    try {
+        const response = await axios.post("https://api.placafipe.com.br/getplacafipe", {
+            placa: "ABC1234",
+            token: "56486C229830181C41F53EE1FC42D53E9BA471A0F7FA4812F7C9ADA62E29F6"
+        });
+        res.json(response.data);
+    } catch (error) {
+        console.error("Erro ao acessar API externa:", error.message);
+        res.status(500).json({ error: "Erro ao acessar API externa", details: error.message });
+    }
 });
 
-// Rota de diagnóstico
+// Rota de diagnóstico para verificar o status do servidor
 app.get("/health", (req, res) => {
     res.json({ status: "Servidor funcionando corretamente" });
 });
